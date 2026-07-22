@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but commit .env.production: it only carries DEPLOY_TARGET=project so the
+# GitHub Pages project-page build gets basePath '/eva-site'. No secrets.
+!.env.production
 
 # vercel
 .vercel

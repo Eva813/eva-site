@@ -36,12 +36,10 @@ jobs:
           node-version: "24"
           cache: true
       - run: vp install
-      # repo `eva-site` is a GitHub project page (eva813.github.io/eva-site),
-      # so build with DEPLOY_TARGET=project to apply basePath: '/eva-site'.
-      # When you later rename the repo to Eva813.github.io (user page), drop this.
+      # basePath '/eva-site' for the project page comes from apps/portfolio/.env.production
+      # (Next loads it at build time). Note: `vp run` does NOT forward step-level `env:`
+      # to the child `next build`, so setting DEPLOY_TARGET here would be ignored.
       - run: vp run eva-portfolio#build
-        env:
-          DEPLOY_TARGET: project
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/portfolio/out
