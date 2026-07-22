@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# next.js
+apps/*/.next/
+apps/*/out/
+apps/*/next-env.d.ts
+
+# build output
+dist/
+.turbo/
+
+# misc
+*.log
+.DS_Store
+coverage/
+
+# env
+.env
+.env.*
+!.env.example

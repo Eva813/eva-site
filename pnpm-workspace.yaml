@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  # static export + images.unoptimized → sharp's native build is not needed
+  sharp: false
+
+# pnpm skips build scripts for these unless explicitly approved
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

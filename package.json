@@ -1,0 +1,20 @@
+{
+  "name": "eva-site",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vp run eva-portfolio#dev",
+    "build": "vp run eva-portfolio#build",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
+    "deploy": "vp run eva-portfolio#build && gh-pages -d apps/portfolio/out -b gh-pages -t true"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite-plus": "0.2.5"
+  }
+}
