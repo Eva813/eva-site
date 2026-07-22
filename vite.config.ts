@@ -16,6 +16,7 @@ export default defineConfig({
       "**/pnpm-lock.yaml",
       "**/CHANGELOG.md",
       "spec.md",
+      "**/docs/**",
       "**/content/**",
     ],
   },
