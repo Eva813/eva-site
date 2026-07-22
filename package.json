@@ -2,10 +2,6 @@
   "name": "eva-site",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@11.15.1",
-  "engines": {
-    "node": ">=24"
-  },
   "scripts": {
     "dev": "vp run eva-portfolio#dev",
     "build": "vp run eva-portfolio#build",
@@ -16,5 +12,9 @@
   "devDependencies": {
     "gh-pages": "^6.3.0",
     "vite-plus": "0.2.5"
-  }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.15.1"
 }
