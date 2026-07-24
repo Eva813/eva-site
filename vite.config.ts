@@ -18,6 +18,7 @@ export default defineConfig({
       "spec.md",
       "**/docs/**",
       "**/content/**",
+      "**/.agents/**",
     ],
   },
   run: {

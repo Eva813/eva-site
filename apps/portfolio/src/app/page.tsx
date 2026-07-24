@@ -1,8 +1,13 @@
+import { ThemeToggle } from "@/components/theme-toggle";
 import { siteConfig } from "@/config/site";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 px-6 text-center font-sans dark:bg-black">
+    <div className="relative flex flex-1 flex-col items-center justify-center bg-background px-6 text-center font-sans text-foreground">
+      {/* 暫置：之後移進 header（#4） */}
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <main className="flex max-w-2xl flex-col items-center gap-6">
         <h1 className="text-4xl font-semibold tracking-tight text-black dark:text-zinc-50">
           {siteConfig.name}

@@ -16,6 +16,9 @@ dist/
 .DS_Store
 coverage/
 
+# personal skill library (not project code)
+.agents/
+
 # env
 .env
 .env.*
