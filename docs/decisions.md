@@ -77,17 +77,18 @@
 ## 3. 實作路線
 
 ### M1 收尾（真正只有兩件）
-- [ ] ① 切 Node 24（`nvm use` → `.nvmrc` 已釘 24.18.0），本機跑綠 `vp check` + `vp run eva-portfolio#build`
+- [x] ① 切 Node 24（`.nvmrc` 已釘 24.18.0），本機跑綠 `vp check` + `vp run eva-portfolio#build`
 - [ ] ③ `git push` 觸發 Actions，確認 check→build→deploy 三段綠燈，開 `eva813.github.io/eva-site` 驗收預覽
 > 註：原 ② 字型/暗色一致性不算純 M1，已併入 M3（見 D3）。
+> pnpm 修復：本機 pnpm 曾是 node-18 的壞 corepack shim，已裝進 node24 bin 修好（見 memory / node24-toolchain）。
 
-### M3 樣式（D3–D5）
-- [ ] `shadcn init` + 設 design token / 暗色 CSS 變數（class 策略）
-- [ ] 裝 `next-themes`，加 ThemeProvider + 暗黑/一般切換鈕
-- [ ] 清理 globals.css（移除 prefers-color-scheme、修 body 字型）
-- [ ] 外框：header + nav + theme-toggle + footer
-- [ ] 首頁 hero / 自介區塊（複刻 chanhdai）
-- [ ] blog 版型骨架：`/blog` 列表 + `/blog/[slug]` prose（假文章撐版）
+### M3 樣式（D3–D5）— ✅ 完成
+- [x] `shadcn init`（Nova/Radix/neutral）+ design token / 暗色 CSS 變數（class 策略）
+- [x] 裝 `next-themes`，加 ThemeProvider + 暗黑/一般切換鈕
+- [x] 清理 globals.css（shadcn 一併換掉舊 prefers-color-scheme、修 body 字型）
+- [x] 外框：header + nav + theme-toggle + footer
+- [x] 首頁 hero / 自介區塊（用 GitHub 資料，個資集中 config）
+- [x] blog 版型骨架：`/blog` 列表 + `/blog/[slug]` prose（假文章撐版、靜態匯出通）
 
 ### M2 內容（D6）
 - [ ] 裝 MDX 管線（next-mdx-remote / gray-matter / zod / remark-rehype / shiki / typography）
@@ -108,6 +109,14 @@
 - **O1 — 舊網址保留策略**：Hexo 是日期路由（如 `/2020/xx/xx/title/`），新站要走 `/blog/[slug]` 還是保留舊路徑做 redirect？影響 blog 骨架的路由形狀（M3 就要定）與 SEO。
 - **O2 — 首批內容範圍**：M2 先搬幾篇打通管線，還是一次全搬？
 - **O3 — 圖片壓縮自動化**：build script + `sharp` 批次，還是先手動壓？（圖少可先手動）
+
+---
+
+## 5. 踩雷筆記（infra）
+
+- **basePath 資產陷阱**：在 `DEPLOY_TARGET=project`（basePath `/eva-site`）下，**用字串路徑引用 `public/` 的圖片不會自動補 basePath**（例如 `next/image src="/images/x.jpg"` 會輸出成 `/images/x.jpg`，在專案頁 404）。
+  - **元件內的圖片**（如首頁頭像）：改用**靜態 import**（放 `src/assets/`，`import x from "@/assets/x.jpg"`），Next 會補 basePath 並加 content hash。已套用於 [hero.tsx](../apps/portfolio/src/features/portfolio/components/hero.tsx)。
+  - **M2 blog 內容圖片**：MDX 裡的 `<img src="/images/…">` / markdown 圖片同樣不會補 basePath —— 搬 Hexo 文章時要處理（rehype 插件補前綴，或改走 import）。這是 O1 之外 M2 的第二個坑。
 
 ---
 
