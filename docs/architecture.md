@@ -147,11 +147,11 @@ push 到 `main` → GitHub Actions 依序跑三個 job:
 設定一次後,之後 `git push` 就自動上線,連指令都不用打。
 
 ### basePath 的兩種網址(重要觀念)
-GitHub Pages 有兩種網址規則,`next.config.ts` 用 `DEPLOY_TARGET` 環境變數自動切:
+GitHub Pages 有兩種網址規則,`next.config.ts` 用 `DEPLOY_TARGET` 旗標自動切:
 - **使用者頁面**(repo 名 = `Eva813.github.io`)→ 網址 `eva813.github.io`,在**根目錄**,不需 basePath。→ 不設 `DEPLOY_TARGET`。
-- **專案頁面**(其他 repo 名)→ 網址 `eva813.github.io/eva-site`,在**子路徑**,所有資源要加 `/eva-site` 前綴。→ 設 `DEPLOY_TARGET=project`。
+- **專案頁面**(其他 repo 名,如現在的 `eva-site`)→ 網址 `eva813.github.io/eva-site`,在**子路徑**,所有資源要加 `/eva-site` 前綴。→ 設 `DEPLOY_TARGET=project`。
 
-同一份程式碼,靠環境變數兩邊都能對。
+同一份程式碼,靠旗標兩邊都能對。**注意**:這個旗標不是靠 workflow 的 `env:` 傳(`vp run` 會吃掉,見 6.1),而是放在 `apps/portfolio/.env.production` 由 Next 自己載入。
 
 ---
 
@@ -171,9 +171,34 @@ spec 要求記錄「哪些 `vp` 指令直接命中、哪些 fallback 回 `next`�
 |---|---|---|
 | `vp run eva-portfolio#dev` | 調度 `next dev`(Turbopack),`Ready in ~3s` | ✅ 命中 |
 | `vp check` | Oxlint + Oxfmt + 型別,自己處理 | ✅ 原生 |
-| `vp run eva-portfolio#build` | 調度 `next build`(靜態匯出) | ⏳ 待你驗證 |
+| `vp run eva-portfolio#build` | 調度 `next build`(靜態匯出到 `out/`) | ✅ 命中 |
+
+**已知毛邊(踩過)**:
+- `vp run` **不轉發環境變數**給子行程(見 6.1)。
+- `vp run …#build` 會顯示 `not cached because it modified its input` —— 因為 `next build` 會寫回輸入樹(`next-env.d.ts`、`.next/`),vp 的 task cache 因此失效。無害,只是每次都真跑、不會 cache-hit。
 
 > Vite+ 是 beta,接 Next.js 這種自帶 bundler 的框架偶爾有毛邊。遇到就把錯誤記進這張表,就是最好的 infra 筆記。
+
+### 6.1 踩坑筆記:上線後「有文字、沒樣式」
+
+**現象**:push 部署到 GitHub Pages(`eva813.github.io/eva-site`)後,頁面只有文字、完全沒有 Tailwind 樣式。
+
+**診斷步驟**:
+1. 抓線上 HTML,發現 CSS/JS 全指向**根路徑** `/_next/...`,但網站掛在 `/eva-site/` 底下 → 瀏覽器實際去要 `eva813.github.io/_next/...` → **404**。
+2. 對照實驗(關鍵):
+
+   | build 方式 | 產出的 CSS 路徑 |
+   |---|---|
+   | `DEPLOY_TARGET=project vp run …#build` | `/_next/...`(❌ 無前綴) |
+   | `DEPLOY_TARGET=project next build`(繞過 vp) | `/eva-site/_next/...`(✅) |
+
+**根因**:**`vp run` 不會把 step/shell 設定的環境變數轉發給它呼叫的子行程 `next build`**。所以 workflow 裡用 `env: DEPLOY_TARGET: project` 傳進去的值,傳到 `vp run` 這一層就被擋下來、沒有繼續往下傳 → `next.config.ts` 裡的 `process.env.DEPLOY_TARGET` 讀不到值 → `basePath` 變成空字串 → 所有資源路徑都掛在根路徑,而不是 `/eva-site/` 底下 → 子路徑網站的頁面全部 404。
+
+**解法**:改用 Next.js **自己會主動讀取**的 `apps/portfolio/.env.production`(內容是 `DEPLOY_TARGET=project`)。`next build` 執行時會自己載入這個檔案,不需要經過 vp 傳遞環境變數,所以能穩定生效,不受 `vp run` 影響。
+- `.gitignore` 預設會擋掉所有 `.env*` 檔案,所以要加一行例外規則 `!.env.production`,讓它能進版本控制(CI 才拿得到);這個檔案沒有機密資訊,只存了部署目標的旗標。
+- 之後如果把 repo 改名成 `Eva813.github.io`(GitHub 使用者主頁專用的 repo,網址走根路徑),就把這個檔案刪掉即可,`basePath` 會自動變回空字串。
+
+**教訓**:當中間層工具(這裡是 `vp run`)沒有把環境變數往下傳遞時,與其想辦法讓中間層正確轉發,不如改成「餵給最終工具自己會主動讀取的設定檔」,這樣就直接繞過中間層,不受它的行為影響。
 
 ---
 
@@ -205,8 +230,8 @@ spec 要求記錄「哪些 `vp` 指令直接命中、哪些 fallback 回 `next`�
 
 ## 9. 下一步(對照 spec 里程碑)
 
-- **M1 收尾**:驗證 `vp run eva-portfolio#build` 有產出 `out/`(把上面工具鏈地圖那格補成 ✅)。
-- **接遠端**:GitHub 建 `eva-site` repo → `git remote add origin` → `git push` → 開 Actions 部署、Settings→Pages→Source 選 GitHub Actions。
+- ~~**M1 收尾**:`vp run eva-portfolio#build` 產出 `out/`~~ ✅ 完成。
+- ~~**接遠端 + 上線**:push 到 `github.com/Eva813/eva-site` → Actions 自動部署 → `eva813.github.io/eva-site` 已上線(含 6.1 的 basePath 修正)~~ ✅ 完成。
 - **M2 內容**:把 Hexo `_posts/` 的 Markdown 搬進 `content/`,設 MDX 路由。
 - **M3 樣式**:導入 shadcn/ui,複刻 chanhdai 的 design token 與版型。
 - **M4 圖片**:圖片進 `public/images/` + 壓縮流程。
