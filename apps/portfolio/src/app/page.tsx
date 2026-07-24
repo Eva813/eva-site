@@ -1,14 +1,9 @@
-import { ThemeToggle } from "@/components/theme-toggle";
 import { siteConfig } from "@/config/site";
 
 export default function Home() {
   return (
-    <div className="relative flex flex-1 flex-col items-center justify-center bg-background px-6 text-center font-sans text-foreground">
-      {/* 暫置：之後移進 header（#4） */}
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
-      </div>
-      <main className="flex max-w-2xl flex-col items-center gap-6">
+    <div className="flex flex-1 flex-col items-center justify-center bg-background px-6 text-center font-sans text-foreground">
+      <div className="flex max-w-2xl flex-col items-center gap-6">
         <h1 className="text-4xl font-semibold tracking-tight text-black dark:text-zinc-50">
           {siteConfig.name}
         </h1>
@@ -18,7 +13,7 @@ export default function Home() {
         <p className="rounded-full border border-black/[.08] px-4 py-1 text-sm text-zinc-500 dark:border-white/[.145] dark:text-zinc-500">
           M1 骨架 · Next.js 16 + Vite+ · 靜態匯出到 GitHub Pages
         </p>
-      </main>
+      </div>
     </div>
   );
 }
