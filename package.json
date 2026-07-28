@@ -9,6 +9,9 @@
     "check:fix": "vp check --fix",
     "deploy": "vp run eva-portfolio#build && gh-pages -d apps/portfolio/out -b gh-pages -t true"
   },
+  "dependencies": {
+    "framer-motion": "^12.42.2"
+  },
   "devDependencies": {
     "gh-pages": "^6.3.0",
     "vite-plus": "0.2.5"
@@ -16,8 +19,5 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.15.1",
-  "dependencies": {
-    "framer-motion": "^12.42.2"
-  }
+  "packageManager": "pnpm@11.15.1"
 }

@@ -23,7 +23,7 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
   if (!post) notFound();
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-12 sm:px-6 sm:py-16">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-12 sm:px-6 sm:py-16">
       <Link
         href="/blog"
         className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -31,9 +31,13 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
         ← 回文章列表
       </Link>
 
-      <header className="flex flex-col gap-2">
+      <header className="flex flex-col gap-3 border-b border-border pb-6">
         <h1 className="text-3xl font-semibold tracking-tight">{post.title}</h1>
-        <time dateTime={post.date} className="text-sm text-muted-foreground">
+        <time
+          dateTime={post.date}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground"
+        >
+          <span className="h-px w-4 bg-primary" aria-hidden />
           {formatPostDate(post.date)}
         </time>
       </header>

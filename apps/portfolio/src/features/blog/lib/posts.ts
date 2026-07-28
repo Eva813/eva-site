@@ -57,10 +57,7 @@ const posts: Post[] = [
     readTime: 7,
     featured: true,
     difficulty: "中級",
-    body: [
-      "這是一篇設計相關的佔位文章。",
-      "內容會在 M2 更新。",
-    ],
+    body: ["這是一篇設計相關的佔位文章。", "內容會在 M2 更新。"],
   },
   {
     slug: "growth-lessons",
@@ -71,10 +68,7 @@ const posts: Post[] = [
     readTime: 10,
     featured: false,
     difficulty: "入門",
-    body: [
-      "個人思考的文章。",
-      "內容會在 M2 更新。",
-    ],
+    body: ["個人思考的文章。", "內容會在 M2 更新。"],
   },
 ];
 
@@ -83,7 +77,9 @@ export function getAllPosts(): Post[] {
 }
 
 export function getFeaturedPosts(limit = 5): Post[] {
-  return getAllPosts().filter((p) => p.featured).slice(0, limit);
+  return getAllPosts()
+    .filter((p) => p.featured)
+    .slice(0, limit);
 }
 
 export function getPostsByCategory(category: Post["category"]): Post[] {

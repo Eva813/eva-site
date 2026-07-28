@@ -48,6 +48,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-line: color-mix(in oklab, var(--border) 64%, var(--background));
 }
 
 /**
@@ -60,30 +61,35 @@
  */
 
 :root {
-  /* ===== 灰度系統 (Neutral) ===== */
-  --neutral-50: oklch(0.99 0 0);
-  --neutral-100: oklch(0.96 0 0);
-  --neutral-200: oklch(0.90 0 0);
-  --neutral-300: oklch(0.80 0 0);
-  --neutral-400: oklch(0.65 0 0);
-  --neutral-500: oklch(0.50 0 0);
-  --neutral-600: oklch(0.35 0 0);
-  --neutral-700: oklch(0.25 0 0);
-  --neutral-800: oklch(0.15 0 0);
-  --neutral-900: oklch(0.08 0 0);
+  /* ===== 灰度系統 (Neutral，帶極微暖調，避免死白/死黑) ===== */
+  --neutral-50: oklch(0.99 0.004 80);
+  --neutral-100: oklch(0.965 0.005 80);
+  --neutral-200: oklch(0.91 0.006 80);
+  --neutral-300: oklch(0.82 0.008 80);
+  --neutral-400: oklch(0.66 0.01 80);
+  --neutral-500: oklch(0.51 0.01 80);
+  --neutral-600: oklch(0.36 0.01 80);
+  --neutral-700: oklch(0.26 0.01 80);
+  --neutral-800: oklch(0.16 0.008 80);
+  --neutral-900: oklch(0.09 0.006 80);
 
-  /* ===== 品牌色 (Primary - Indigo 264°) ===== */
+  /* ===== 品牌色 (Primary - Indigo 264°，提升彩度更有記憶點) ===== */
   --primary-50: oklch(0.95 0.04 264);
   --primary-100: oklch(0.88 0.08 264);
-  --primary-200: oklch(0.80 0.12 264);
-  --primary-600: oklch(0.48 0.16 264);
-  --primary-700: oklch(0.40 0.16 264);
-  --primary-900: oklch(0.20 0.16 264);
+  --primary-200: oklch(0.8 0.13 264);
+  --primary-400: oklch(0.62 0.17 264);
+  --primary-600: oklch(0.48 0.18 264);
+  --primary-700: oklch(0.4 0.18 264);
+  --primary-900: oklch(0.2 0.17 264);
 
-  /* ===== 功能色 (Accent - Amber 73°) ===== */
+  /* ===== 功能色 (Accent - Amber 73°，提升彩度) ===== */
   --accent-50: oklch(0.95 0.03 73);
   --accent-100: oklch(0.88 0.06 73);
-  --accent-600: oklch(0.55 0.12 73);
+  --accent-300: oklch(0.8 0.11 73);
+  --accent-600: oklch(0.55 0.14 73);
+
+  /* ===== 裝飾光暈 (單一品牌色，避免多色互搶) ===== */
+  --glow-primary: oklch(0.8 0.13 264 / 14%);
 
   /* ===== shadcn Token Mapping ===== */
   --background: var(--neutral-50);
@@ -93,7 +99,7 @@
   --popover: var(--neutral-50);
   --popover-foreground: var(--neutral-900);
   --muted: var(--neutral-200);
-  --muted-foreground: var(--neutral-600);  /* 提升對比度：0.50 → 0.35 */
+  --muted-foreground: var(--neutral-600); /* 提升對比度：0.50 → 0.35 */
   --accent: var(--accent-600);
   --accent-foreground: white;
   --destructive: oklch(0.577 0.245 27.325);
@@ -126,54 +132,57 @@
 }
 
 .dark {
-  /* ===== 灰度系統 (暗色) ===== */
-  --neutral-50: oklch(0.99 0 0);
-  --neutral-100: oklch(0.96 0 0);
-  --neutral-200: oklch(0.90 0 0);
-  --neutral-300: oklch(0.80 0 0);
-  --neutral-400: oklch(0.65 0 0);
-  --neutral-500: oklch(0.50 0 0);
-  --neutral-600: oklch(0.35 0 0);
-  --neutral-700: oklch(0.25 0 0);
-  --neutral-800: oklch(0.15 0 0);
-  --neutral-900: oklch(0.08 0 0);
+  /* ===== 灰度系統 (暗色，帶極微暖調) ===== */
+  --neutral-50: oklch(0.99 0.004 80);
+  --neutral-100: oklch(0.965 0.005 80);
+  --neutral-200: oklch(0.91 0.006 80);
+  --neutral-300: oklch(0.82 0.008 80);
+  --neutral-400: oklch(0.66 0.01 80);
+  --neutral-500: oklch(0.51 0.01 80);
+  --neutral-600: oklch(0.36 0.01 80);
+  --neutral-700: oklch(0.26 0.01 80);
+  --neutral-800: oklch(0.16 0.008 80);
+  --neutral-900: oklch(0.09 0.006 80);
 
-  /* ===== 品牌色 (暗色 - 提升亮度) ===== */
+  /* ===== 品牌色 (暗色 - 提升亮度與彩度) ===== */
   --primary-50: oklch(0.95 0.04 264);
   --primary-100: oklch(0.88 0.08 264);
-  --primary-200: oklch(0.80 0.12 264);
-  --primary-300: oklch(0.68 0.14 264);   /* NEW: 暗色用 */
-  --primary-400: oklch(0.75 0.12 264);   /* NEW: 暗色連結用 */
-  --primary-600: oklch(0.48 0.16 264);   /* 淺色值，暗背景下用不著 */
-  --primary-700: oklch(0.40 0.16 264);
+  --primary-200: oklch(0.8 0.13 264);
+  --primary-300: oklch(0.68 0.16 264); /* NEW: 暗色用 */
+  --primary-400: oklch(0.75 0.14 264); /* NEW: 暗色連結用 */
+  --primary-600: oklch(0.48 0.18 264); /* 淺色值，暗背景下用不著 */
+  --primary-700: oklch(0.4 0.18 264);
 
   /* ===== 功能色 (暗色 - 提升亮度) ===== */
   --accent-50: oklch(0.95 0.03 73);
   --accent-100: oklch(0.88 0.06 73);
-  --accent-400: oklch(0.72 0.10 73);    /* NEW: 暗色用 */
-  --accent-600: oklch(0.72 0.10 73);    /* 深色模式用亮琥珀色，確保對比度 */
+  --accent-400: oklch(0.72 0.12 73); /* NEW: 暗色用 */
+  --accent-600: oklch(0.72 0.12 73); /* 深色模式用亮琥珀色，確保對比度 */
+
+  /* ===== 裝飾光暈 (暗色，單一品牌色) ===== */
+  --glow-primary: oklch(0.5 0.16 264 / 26%);
 
   /* ===== shadcn Token Mapping (暗色) ===== */
-  --background: oklch(0.08 0 0);        /* 深黑背景 */
-  --foreground: oklch(0.99 0 0);        /* 白色文字 */
-  --card: oklch(0.12 0 0);              /* 稍淡的黑 */
+  --background: oklch(0.08 0 0); /* 深黑背景 */
+  --foreground: oklch(0.99 0 0); /* 白色文字 */
+  --card: oklch(0.12 0 0); /* 稍淡的黑 */
   --card-foreground: oklch(0.99 0 0);
   --popover: oklch(0.12 0 0);
   --popover-foreground: oklch(0.99 0 0);
   --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.65 0 0);  /* 灰色文字 */
+  --muted-foreground: oklch(0.65 0 0); /* 灰色文字 */
   --accent: var(--accent-400);
   --accent-foreground: oklch(0.08 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);         /* 白色 10% 透明度 */
+  --border: oklch(1 0 0 / 10%); /* 白色 10% 透明度 */
   --input: oklch(1 0 0 / 15%);
   --ring: var(--primary-400);
 
   /* ===== Primary for Interactive (Dark Mode) ===== */
-  --primary: oklch(0.75 0.12 264);        /* 亮靛藍，對按鈕背景 */
-  --primary-foreground: oklch(0.08 0 0);  /* 深灰/黑，對文字 */
-  --primary-600: oklch(0.75 0.12 264);    /* 覆蓋亮色 primary-600 */
-  --primary-700: oklch(0.68 0.13 264);    /* Hover 時略暗 */
+  --primary: oklch(0.75 0.12 264); /* 亮靛藍，對按鈕背景 */
+  --primary-foreground: oklch(0.08 0 0); /* 深灰/黑，對文字 */
+  --primary-600: oklch(0.75 0.12 264); /* 覆蓋亮色 primary-600 */
+  --primary-700: oklch(0.68 0.13 264); /* Hover 時略暗 */
   --secondary: oklch(0.15 0 0);
   --secondary-foreground: oklch(0.99 0 0);
 
@@ -201,6 +210,60 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-sans overflow-x-clip;
+  }
+}
+
+/*
+ * 滿版水平線：即使內容欄是窄版置中，線條仍從視窗左緣延伸到右緣，
+ * 做出「稿紙格線」的結構感。逐字取自 chanhdai.com 的 shadcn registry (style entry)。
+ */
+@utility screen-line-top {
+  @apply relative before:absolute before:top-0 before:left-[-100vw] before:-z-1 before:h-px before:w-[200vw] before:bg-line;
+}
+@utility screen-line-bottom {
+  @apply relative after:absolute after:bottom-0 after:left-[-100vw] after:-z-1 after:h-px after:w-[200vw] after:bg-line;
+}
+
+/* 底線帶淡色偏移，hover 時轉為實色，取自 chanhdai github-contributions registry entry */
+@utility link-underline {
+  @apply underline decoration-current/30 decoration-1 underline-offset-3 transition-colors hover:decoration-current;
+}
+
+/* 隱藏捲軸但保留可捲動性，用在熱力圖等橫向捲動容器 */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  /* 45° 條紋分隔，低調的裝飾細節，克制使用 */
+  .stripe-divider {
+    height: 6px;
+    background-image: repeating-linear-gradient(
+      315deg,
+      var(--color-line) 0,
+      var(--color-line) 1px,
+      transparent 1px,
+      transparent 8px
+    );
+  }
+
+  /* 低調流動漸層：只在暗色模式出現，呼應「動態光暈」但不引入 WebGL 依賴 */
+  .flow-glow {
+    background: radial-gradient(60% 50% at 50% 0%, var(--glow-primary), transparent 70%);
+    animation: flow-glow-shift 16s ease-in-out infinite alternate;
+  }
+  @keyframes flow-glow-shift {
+    from {
+      transform: translateX(-4%) scale(1);
+      opacity: 0.8;
+    }
+    to {
+      transform: translateX(4%) scale(1.08);
+      opacity: 1;
+    }
   }
 }
