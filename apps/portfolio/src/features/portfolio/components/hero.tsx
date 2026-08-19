@@ -1,11 +1,11 @@
 "use client";
 
-import { Globe, Mail, ArrowRight } from "lucide-react";
+import { ArrowRight, Globe, Mail } from "lucide-react";
 import Image from "next/image";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { motion } from "framer-motion";
 import avatar from "@/assets/avatar.jpg";
-import { Panel, PanelContent } from "@/components/panel";
+import { Panel } from "@/components/panel";
 import { siteConfig } from "@/config/site";
 
 const { author, links } = siteConfig;
@@ -24,100 +24,100 @@ const contacts = [
   { href: `mailto:${links.email}`, label: "Email", icon: Mail },
 ];
 
-const containerVariants = {
+// 只放不會跟其他區塊重複的資訊：技術棧有自己的 Tech Stack 區，這裡就不再列一次。
+const specs: { label: string; value: ReactNode }[] = [
+  { label: "ROLE", value: author.title },
+  { label: "HANDLE", value: `@${author.handle}` },
+  { label: "SITE", value: links.website.replace(/^https?:\/\//, "") },
+];
+
+const container = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export function Hero() {
   return (
     <Panel id="profile">
-      <PanelContent className="flex flex-col items-center gap-6 p-6 text-center sm:p-10">
-        <motion.div variants={containerVariants} initial="hidden" animate="visible">
-          {/* Avatar - 錯開進入 */}
-          <motion.div variants={itemVariants}>
-            <Image
-              src={avatar}
-              alt={author.name}
-              priority
-              className="size-24 rounded-full border border-border object-cover sm:size-28"
-            />
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="visible"
+        className="flex flex-col gap-6 p-4 sm:flex-row sm:items-start sm:gap-8 sm:p-6"
+      >
+        <motion.div variants={item}>
+          <AvatarPlate />
+        </motion.div>
+
+        <div className="flex min-w-0 flex-1 flex-col gap-5">
+          <motion.div variants={item}>
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{author.name}</h1>
           </motion.div>
 
-          {/* Title & Subtitle - 錯開進入 */}
-          <motion.div variants={itemVariants} className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{author.name}</h1>
-            <p className="text-base text-muted-foreground">Technologist × Designer × Creator</p>
-          </motion.div>
-
-          {/* Identity Badges - 錯開進入 */}
-          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-2">
-            {[
-              { emoji: "🔹", label: "技術深度" },
-              { emoji: "🎨", label: "設計思維" },
-              { emoji: "📝", label: "內容" },
-            ].map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
-                whileHover={{ scale: 1.05 }}
-                className="px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/40 dark:text-primary-300 text-xs font-medium"
+          {/* 規格列：靠左、等寬字、hairline 分隔，跟全站的格線語彙一致 */}
+          <motion.dl variants={item} className="grid grid-cols-[5.5rem_1fr] font-mono text-sm">
+            {specs.map(({ label, value }) => (
+              <div
+                key={label}
+                className="col-span-2 grid grid-cols-subgrid border-t border-line py-2"
               >
-                <span className="mr-1">{item.emoji}</span>
-                {item.label}
-              </motion.div>
+                <dt className="text-xs tracking-widest text-muted-foreground">{label}</dt>
+                <dd className="min-w-0 truncate text-foreground/90">{value}</dd>
+              </div>
             ))}
-          </motion.div>
+          </motion.dl>
 
-          {/* Contact Links - 簡潔 */}
-          <motion.ul
-            variants={itemVariants}
-            className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm"
-          >
-            {contacts.map(({ href, label, icon: Icon }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  target={href.startsWith("mailto:") ? undefined : "_blank"}
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary-600 dark:hover:text-primary-300"
-                >
-                  <Icon className="size-4" />
-                  {label}
-                </a>
-              </li>
-            ))}
-          </motion.ul>
+          <motion.div variants={item} className="flex flex-wrap items-center gap-x-3 gap-y-3">
+            <ul className="flex items-center">
+              {contacts.map(({ href, label, icon: Icon }, index) => (
+                <li key={label} className="flex items-center">
+                  {index > 0 && <span className="mx-3 h-4 w-px bg-line" aria-hidden />}
+                  <a
+                    href={href}
+                    target={href.startsWith("mailto:") ? undefined : "_blank"}
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary-700 dark:hover:text-primary-300"
+                  >
+                    <Icon className="size-4" />
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-          {/* CTA Button */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
             <a
               href="/blog"
-              className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 text-white px-6 py-2.5 font-medium transition-colors hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-200"
+              className="inline-flex w-full items-center justify-center gap-2 border border-line px-4 py-2 text-sm font-medium sm:ms-auto sm:w-auto text-primary-700 transition-colors hover:border-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:border-primary-300 dark:hover:bg-primary-900/40"
             >
               探索文章
               <ArrowRight className="size-4" />
             </a>
           </motion.div>
-        </motion.div>
-      </PanelContent>
+        </div>
+      </motion.div>
     </Panel>
+  );
+}
+
+// 方形頭像 + 疊上 4×4 格線，與 wordmark 用的是同一套像素格。
+function AvatarPlate() {
+  return (
+    <div className="relative size-28 shrink-0 border border-line sm:size-32">
+      <Image src={avatar} alt={author.name} priority className="size-full object-cover" />
+      {/* mix-blend-overlay：亮處變亮、暗處變暗，所以格線在任何照片上都看得見 */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(to right, rgba(255,255,255,0.55) 0 1px, transparent 1px 25%), repeating-linear-gradient(to bottom, rgba(255,255,255,0.55) 0 1px, transparent 1px 25%)",
+        }}
+      />
+    </div>
   );
 }

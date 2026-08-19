@@ -37,6 +37,8 @@ const WORDMARK_RECTS: [x: number, y: number, w: number, h: number][] = [
   [544, 208, 32, 32],
 ];
 
+// 柵格單位：footer 的線框版本會依這個尺寸把合併矩形拆回單元格。
+export const WORDMARK_CELL_SIZE = 32;
 export const WORDMARK_VIEWBOX_WIDTH = 608;
 export const WORDMARK_VIEWBOX_HEIGHT = 256;
 

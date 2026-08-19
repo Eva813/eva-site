@@ -34,12 +34,10 @@ export function RecentPosts() {
         >
           <motion.button
             onClick={() => setSelectedCategory(null)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            className={`border px-3 py-1.5 font-mono text-sm transition-colors ${
               selectedCategory === null
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-line text-muted-foreground hover:border-primary-700 hover:text-foreground dark:hover:border-primary-300"
             }`}
           >
             全部
@@ -48,16 +46,14 @@ export function RecentPosts() {
             <motion.button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 + idx * 0.05, duration: 0.3 }}
               viewport={{ once: true }}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+              className={`border px-3 py-1.5 font-mono text-sm transition-colors ${
                 selectedCategory === cat
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-line text-muted-foreground hover:border-primary-700 hover:text-foreground dark:hover:border-primary-300"
               }`}
             >
               {cat}
@@ -92,7 +88,7 @@ export function RecentPosts() {
                 visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
               }}
               whileHover={{ x: 6, transition: { duration: 0.2 } }}
-              className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 pl-5 transition-colors hover:border-primary/40"
+              className="group relative overflow-hidden border border-line bg-card p-4 pl-5 transition-colors hover:border-primary-700/50 dark:hover:border-primary-300/50"
             >
               <span
                 aria-hidden
@@ -110,25 +106,22 @@ export function RecentPosts() {
                     {post.description}
                   </p>
                   <div className="mt-2.5 flex flex-wrap gap-2">
-                    <motion.span
-                      className="inline-block rounded px-2 py-0.5 bg-primary-50 text-primary-600 dark:bg-primary-900/40 dark:text-primary-400 text-xs font-medium"
-                      whileHover={{ scale: 1.1 }}
-                    >
+                    <span className="inline-block border border-line px-2 py-0.5 font-mono text-xs text-primary-700 dark:text-primary-300">
                       #{post.category}
-                    </motion.span>
+                    </span>
                     {post.readTime && (
-                      <span className="inline-block text-xs text-muted-foreground">
+                      <span className="inline-block font-mono text-xs text-muted-foreground">
                         {post.readTime} min
                       </span>
                     )}
                     {post.difficulty && (
-                      <span className="inline-block text-xs text-muted-foreground">
+                      <span className="inline-block font-mono text-xs text-muted-foreground">
                         {post.difficulty}
                       </span>
                     )}
                   </div>
                 </div>
-                <div className="shrink-0 text-xs text-muted-foreground whitespace-nowrap">
+                <div className="shrink-0 font-mono text-xs whitespace-nowrap text-muted-foreground">
                   {new Date(post.date).toLocaleDateString("zh-TW", {
                     month: "short",
                     day: "numeric",
