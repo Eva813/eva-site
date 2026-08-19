@@ -101,7 +101,7 @@ export function RecentPosts() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <motion.h3
-                    className="font-semibold text-foreground group-hover:text-primary-600 transition-colors"
+                    className="font-semibold text-foreground group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors"
                     whileHover={{ x: 2 }}
                   >
                     {post.title}

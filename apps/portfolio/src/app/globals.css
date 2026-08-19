@@ -41,6 +41,32 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* 數字階註冊：沒有這段，bg-primary-50 / text-primary-600 等 class 不會產生任何 CSS */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -55,13 +81,19 @@
  * Professional Color System
  * 中性專業風 × 內容優先設計
  *
- * 灰度 (Neutral): 信任、可讀性
- * 品牌色 (Primary - Indigo): 靛藍，深沉科技感
- * 功能色 (Accent - Amber): 琥珀，溫暖內容感
+ * 灰度 (Neutral)   : 暖調中性灰 h=80，信任、可讀性
+ * 品牌色 (Primary) : Ink Navy h=250 — 看似黑、帶藍的深度
+ * 功能色 (Accent)  : 黃銅琥珀 h=65 — 與 navy 互補，畫面唯一的鮮色
+ *
+ * 設計規則：
+ * 1. 色階 (50–900) 只定義一次，明暗模式共用，語意固定「50 最淺 → 900 最深」。
+ *    元件用 dark: 變體切換取哪一階，而不是靠改寫色階本身。
+ * 2. 只有語意 token (--primary / --ring / --background …) 會隨模式改變。
+ * 3. 所有色值皆通過 sRGB 色域檢查，主要前景/背景組合對比度 ≥ 4.5。
  */
 
 :root {
-  /* ===== 灰度系統 (Neutral，帶極微暖調，避免死白/死黑) ===== */
+  /* ===== 灰度系統 (暖調 h=80，避免死白/死黑) ===== */
   --neutral-50: oklch(0.99 0.004 80);
   --neutral-100: oklch(0.965 0.005 80);
   --neutral-200: oklch(0.91 0.006 80);
@@ -73,23 +105,31 @@
   --neutral-800: oklch(0.16 0.008 80);
   --neutral-900: oklch(0.09 0.006 80);
 
-  /* ===== 品牌色 (Primary - Indigo 264°，提升彩度更有記憶點) ===== */
-  --primary-50: oklch(0.95 0.04 264);
-  --primary-100: oklch(0.88 0.08 264);
-  --primary-200: oklch(0.8 0.13 264);
-  --primary-400: oklch(0.62 0.17 264);
-  --primary-600: oklch(0.48 0.18 264);
-  --primary-700: oklch(0.4 0.18 264);
-  --primary-900: oklch(0.2 0.17 264);
+  /* ===== 品牌色 (Primary - Ink Navy 250°) =====
+   * 低彩度是刻意的：主色近黑，識別感來自「深」而非「艷」，
+   * 因此不會和暖灰打架（舊的 264° C=0.18 與暖灰幾乎互補，才是先前不搭的主因）。
+   * 明暗模式共用同一組色階。 */
+  --primary-50: oklch(0.965 0.012 250); /* 淺色 badge 底 */
+  --primary-100: oklch(0.925 0.026 250);
+  --primary-200: oklch(0.865 0.045 250); /* 暗色模式主色 */
+  --primary-300: oklch(0.79 0.06 250); /* 暗色 hover */
+  --primary-400: oklch(0.7 0.072 250); /* 暗色連結 */
+  --primary-500: oklch(0.56 0.08 250);
+  --primary-600: oklch(0.45 0.082 250); /* 淺色連結 */
+  --primary-700: oklch(0.36 0.072 250); /* 淺色 hover */
+  --primary-800: oklch(0.29 0.055 250); /* 淺色主色（墨藍錨點） */
+  --primary-900: oklch(0.19 0.04 250); /* 暗色 badge 底 */
 
-  /* ===== 功能色 (Accent - Amber 73°，提升彩度) ===== */
-  --accent-50: oklch(0.95 0.03 73);
-  --accent-100: oklch(0.88 0.06 73);
-  --accent-300: oklch(0.8 0.11 73);
-  --accent-600: oklch(0.55 0.14 73);
+  /* ===== 功能色 (Accent - 黃銅琥珀 65°) =====
+   * 舊值 oklch(0.55 0.14 73) 超出 sRGB 色域會被瀏覽器裁切，此處收斂到色域內。 */
+  --accent-50: oklch(0.96 0.022 65);
+  --accent-100: oklch(0.9 0.05 65);
+  --accent-300: oklch(0.8 0.11 65);
+  --accent-400: oklch(0.78 0.13 65); /* 暗色用 */
+  --accent-600: oklch(0.55 0.114 65); /* 淺色用 */
 
   /* ===== 裝飾光暈 (單一品牌色，避免多色互搶) ===== */
-  --glow-primary: oklch(0.8 0.13 264 / 14%);
+  --glow-primary: oklch(0.865 0.045 250 / 18%);
 
   /* ===== shadcn Token Mapping ===== */
   --background: var(--neutral-50);
@@ -99,7 +139,7 @@
   --popover: var(--neutral-50);
   --popover-foreground: var(--neutral-900);
   --muted: var(--neutral-200);
-  --muted-foreground: var(--neutral-600); /* 提升對比度：0.50 → 0.35 */
+  --muted-foreground: var(--neutral-600);
   --accent: var(--accent-600);
   --accent-foreground: white;
   --destructive: oklch(0.577 0.245 27.325);
@@ -108,7 +148,7 @@
   --ring: var(--primary-600);
 
   /* ===== Primary for Interactive ===== */
-  --primary: var(--primary-600);
+  --primary: var(--primary-800);
   --primary-foreground: white;
   --secondary: var(--neutral-100);
   --secondary-foreground: var(--neutral-900);
@@ -121,7 +161,7 @@
   --chart-5: oklch(0.269 0 0);
   --sidebar: var(--neutral-50);
   --sidebar-foreground: var(--neutral-900);
-  --sidebar-primary: var(--primary-600);
+  --sidebar-primary: var(--primary-800);
   --sidebar-primary-foreground: white;
   --sidebar-accent: var(--accent-100);
   --sidebar-accent-foreground: var(--accent-600);
@@ -132,59 +172,33 @@
 }
 
 .dark {
-  /* ===== 灰度系統 (暗色，帶極微暖調) ===== */
-  --neutral-50: oklch(0.99 0.004 80);
-  --neutral-100: oklch(0.965 0.005 80);
-  --neutral-200: oklch(0.91 0.006 80);
-  --neutral-300: oklch(0.82 0.008 80);
-  --neutral-400: oklch(0.66 0.01 80);
-  --neutral-500: oklch(0.51 0.01 80);
-  --neutral-600: oklch(0.36 0.01 80);
-  --neutral-700: oklch(0.26 0.01 80);
-  --neutral-800: oklch(0.16 0.008 80);
-  --neutral-900: oklch(0.09 0.006 80);
+  /* 色階 (neutral / primary / accent) 不在此重新宣告 —— 明暗模式共用 :root 的定義。
+   * 這裡只切換語意 token，以及把表面色帶上與暖灰一致的極微暖調 (h=80)，
+   * 避免暗色模式變成純冷灰、和淺色模式的暖灰性格不一致。 */
 
-  /* ===== 品牌色 (暗色 - 提升亮度與彩度) ===== */
-  --primary-50: oklch(0.95 0.04 264);
-  --primary-100: oklch(0.88 0.08 264);
-  --primary-200: oklch(0.8 0.13 264);
-  --primary-300: oklch(0.68 0.16 264); /* NEW: 暗色用 */
-  --primary-400: oklch(0.75 0.14 264); /* NEW: 暗色連結用 */
-  --primary-600: oklch(0.48 0.18 264); /* 淺色值，暗背景下用不著 */
-  --primary-700: oklch(0.4 0.18 264);
-
-  /* ===== 功能色 (暗色 - 提升亮度) ===== */
-  --accent-50: oklch(0.95 0.03 73);
-  --accent-100: oklch(0.88 0.06 73);
-  --accent-400: oklch(0.72 0.12 73); /* NEW: 暗色用 */
-  --accent-600: oklch(0.72 0.12 73); /* 深色模式用亮琥珀色，確保對比度 */
-
-  /* ===== 裝飾光暈 (暗色，單一品牌色) ===== */
-  --glow-primary: oklch(0.5 0.16 264 / 26%);
-
-  /* ===== shadcn Token Mapping (暗色) ===== */
-  --background: oklch(0.08 0 0); /* 深黑背景 */
-  --foreground: oklch(0.99 0 0); /* 白色文字 */
-  --card: oklch(0.12 0 0); /* 稍淡的黑 */
-  --card-foreground: oklch(0.99 0 0);
-  --popover: oklch(0.12 0 0);
-  --popover-foreground: oklch(0.99 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.65 0 0); /* 灰色文字 */
+  --background: oklch(0.085 0.006 80);
+  --foreground: oklch(0.985 0.002 80);
+  --card: oklch(0.125 0.006 80);
+  --card-foreground: oklch(0.985 0.002 80);
+  --popover: oklch(0.125 0.006 80);
+  --popover-foreground: oklch(0.985 0.002 80);
+  --muted: oklch(0.16 0.006 80);
+  --muted-foreground: oklch(0.66 0.008 80);
   --accent: var(--accent-400);
-  --accent-foreground: oklch(0.08 0 0);
+  --accent-foreground: oklch(0.085 0.006 80);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%); /* 白色 10% 透明度 */
+  --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: var(--primary-400);
+  --ring: var(--primary-300);
 
   /* ===== Primary for Interactive (Dark Mode) ===== */
-  --primary: oklch(0.75 0.12 264); /* 亮靛藍，對按鈕背景 */
-  --primary-foreground: oklch(0.08 0 0); /* 深灰/黑，對文字 */
-  --primary-600: oklch(0.75 0.12 264); /* 覆蓋亮色 primary-600 */
-  --primary-700: oklch(0.68 0.13 264); /* Hover 時略暗 */
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(0.99 0 0);
+  --primary: var(--primary-200);
+  --primary-foreground: oklch(0.085 0.006 80);
+  --secondary: oklch(0.16 0.006 80);
+  --secondary-foreground: oklch(0.985 0.002 80);
+
+  /* ===== 裝飾光暈 (暗色) ===== */
+  --glow-primary: oklch(0.45 0.09 250 / 30%);
 
   /* ===== Chart & Sidebar (保持相容) ===== */
   --chart-1: oklch(0.87 0 0);
@@ -192,14 +206,14 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.12 0 0);
-  --sidebar-foreground: oklch(0.99 0 0);
-  --sidebar-primary: var(--primary-400);
-  --sidebar-primary-foreground: oklch(0.08 0 0);
-  --sidebar-accent: oklch(0.15 0 0);
+  --sidebar: oklch(0.125 0.006 80);
+  --sidebar-foreground: oklch(0.985 0.002 80);
+  --sidebar-primary: var(--primary-200);
+  --sidebar-primary-foreground: oklch(0.085 0.006 80);
+  --sidebar-accent: oklch(0.16 0.006 80);
   --sidebar-accent-foreground: var(--accent-400);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: var(--primary-400);
+  --sidebar-ring: var(--primary-300);
 }
 
 @layer base {

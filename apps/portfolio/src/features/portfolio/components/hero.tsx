@@ -74,7 +74,7 @@ export function Hero() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 + i * 0.1, duration: 0.4 }}
                 whileHover={{ scale: 1.05 }}
-                className="px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 text-xs font-medium"
+                className="px-3 py-1.5 rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/40 dark:text-primary-300 text-xs font-medium"
               >
                 <span className="mr-1">{item.emoji}</span>
                 {item.label}
@@ -93,7 +93,7 @@ export function Hero() {
                   href={href}
                   target={href.startsWith("mailto:") ? undefined : "_blank"}
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary-600"
+                  className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-primary-600 dark:hover:text-primary-300"
                 >
                   <Icon className="size-4" />
                   {label}
