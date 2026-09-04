@@ -3,6 +3,7 @@ import { GithubContributionsSection } from "@/features/portfolio/components/gith
 import { Hero } from "@/features/portfolio/components/hero";
 import { RecentPosts } from "@/features/portfolio/components/recent-posts";
 import { TechStack } from "@/features/portfolio/components/tech-stack";
+import { getFeaturedPosts } from "@/features/blog/lib/posts";
 import { siteConfig } from "@/config/site";
 
 export default function Home() {
@@ -12,7 +13,7 @@ export default function Home() {
       <About />
       <GithubContributionsSection username={siteConfig.author.handle} />
       <TechStack />
-      <RecentPosts />
+      <RecentPosts posts={getFeaturedPosts(5)} />
     </div>
   );
 }

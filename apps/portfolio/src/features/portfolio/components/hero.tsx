@@ -92,7 +92,7 @@ export function Hero() {
 
             <a
               href="/blog"
-              className="inline-flex w-full items-center justify-center gap-2 border border-line px-4 py-2 text-sm font-medium sm:ms-auto sm:w-auto text-primary-700 transition-colors hover:border-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:border-primary-300 dark:hover:bg-primary-900/40"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-medium sm:ms-auto sm:w-auto text-primary-700 transition-colors hover:border-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:border-primary-300 dark:hover:bg-primary-900/40"
             >
               探索文章
               <ArrowRight className="size-4" />
@@ -105,6 +105,8 @@ export function Hero() {
 }
 
 // 方形頭像 + 疊上 4×4 格線，與 wordmark 用的是同一套像素格。
+// 刻意不加 radius：格線是用 repeating-linear-gradient 畫到邊的，收圓角會把四個角的
+// 交叉點切掉而看起來像破圖；而且這塊本身就是 pixel grid 的品牌延伸，不屬於 UI chrome。
 function AvatarPlate() {
   return (
     <div className="relative size-28 shrink-0 border border-line sm:size-32">

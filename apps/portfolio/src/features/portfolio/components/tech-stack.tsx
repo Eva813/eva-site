@@ -18,7 +18,7 @@ export function TechStack() {
               {group.items.map((item) => (
                 <li
                   key={item}
-                  className="border border-line px-3 py-1 font-mono text-sm text-foreground/90"
+                  className="rounded-md border border-line px-3 py-1 font-mono text-sm text-foreground/90"
                 >
                   {item}
                 </li>

@@ -4,14 +4,14 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Panel, PanelContent, PanelHeader, PanelTitle } from "@/components/panel";
-import { getFeaturedPosts } from "@/features/blog/lib/posts";
 import type { Post } from "@/features/blog/lib/posts";
 
 const categories: Post["category"][] = ["技術", "設計", "運營", "思考"];
 
-export function RecentPosts() {
+// 文章資料由 server component 讀 content/ 後以 props 傳入（這裡是 client component，不能碰 fs）。
+export function RecentPosts({ posts }: { posts: Post[] }) {
   const [selectedCategory, setSelectedCategory] = useState<Post["category"] | null>(null);
-  const featuredPosts = getFeaturedPosts(5);
+  const featuredPosts = posts;
   const displayedPosts = selectedCategory
     ? featuredPosts.filter((p) => p.category === selectedCategory)
     : featuredPosts;
@@ -34,7 +34,7 @@ export function RecentPosts() {
         >
           <motion.button
             onClick={() => setSelectedCategory(null)}
-            className={`border px-3 py-1.5 font-mono text-sm transition-colors ${
+            className={`rounded-md border px-3 py-1.5 font-mono text-sm transition-colors ${
               selectedCategory === null
                 ? "border-primary bg-primary text-primary-foreground"
                 : "border-line text-muted-foreground hover:border-primary-700 hover:text-foreground dark:hover:border-primary-300"
@@ -50,7 +50,7 @@ export function RecentPosts() {
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 + idx * 0.05, duration: 0.3 }}
               viewport={{ once: true }}
-              className={`border px-3 py-1.5 font-mono text-sm transition-colors ${
+              className={`rounded-md border px-3 py-1.5 font-mono text-sm transition-colors ${
                 selectedCategory === cat
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-line text-muted-foreground hover:border-primary-700 hover:text-foreground dark:hover:border-primary-300"
@@ -88,7 +88,7 @@ export function RecentPosts() {
                 visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
               }}
               whileHover={{ x: 6, transition: { duration: 0.2 } }}
-              className="group relative overflow-hidden border border-line bg-card p-4 pl-5 transition-colors hover:border-primary-700/50 dark:hover:border-primary-300/50"
+              className="group relative overflow-hidden rounded-md border border-line bg-card p-4 pl-5 transition-colors hover:border-primary-700/50 dark:hover:border-primary-300/50"
             >
               <span
                 aria-hidden
@@ -106,7 +106,7 @@ export function RecentPosts() {
                     {post.description}
                   </p>
                   <div className="mt-2.5 flex flex-wrap gap-2">
-                    <span className="inline-block border border-line px-2 py-0.5 font-mono text-xs text-primary-700 dark:text-primary-300">
+                    <span className="inline-block rounded-sm border border-line px-2 py-0.5 font-mono text-xs text-primary-700 dark:text-primary-300">
                       #{post.category}
                     </span>
                     {post.readTime && (

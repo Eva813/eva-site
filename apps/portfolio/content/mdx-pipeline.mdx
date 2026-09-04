@@ -1,0 +1,110 @@
+---
+title: 用 MDX 把部落格內容從程式碼裡拆出來
+date: "2026-08-19"
+description: 文章不該寫死在 TS 陣列裡。這篇記錄怎麼用 gray-matter + next-mdx-remote 讓 content/ 底下的 .mdx 直接變成一篇文章。
+category: 技術
+tags:
+  - Next.js
+  - MDX
+  - Shiki
+readTime: 6
+featured: true
+difficulty: 中級
+---
+
+從 Hexo 搬過來之後，最想念的其實不是主題，而是那個 `source/_posts/` 資料夾 —— 丟一個 `.md` 進去，文章就出現了。
+
+骨架階段為了先撐出版型，文章是寫死在 `posts.ts` 的陣列裡的。這在改樣式的時候很方便，但一旦要開始寫東西就完全不能用：每寫一篇都要改程式碼，還得跟 TypeScript 型別打架。
+
+## 內容跟程式碼要分開
+
+現在的做法是把原稿放回檔案系統：
+
+```
+apps/portfolio/
+├── content/            ← .mdx 原稿，一篇一檔，檔名就是網址 slug
+│   └── mdx-pipeline.mdx
+├── public/images/      ← 圖片
+└── src/features/blog/
+    └── lib/posts.ts    ← 只負責讀檔、解析、排序
+```
+
+每篇文章開頭是一段 frontmatter，跟 Hexo 幾乎一模一樣：
+
+```yaml
+---
+title: 用 MDX 把部落格內容從程式碼裡拆出來
+date: "2026-08-19"
+category: 技術
+tags:
+  - Next.js
+  - MDX
+---
+```
+
+## 讀取端只有三步
+
+沒有 velite，也沒有 contentlayer。就是 `readFileSync` → `gray-matter` 解 frontmatter → `zod` 驗證：
+
+```ts
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
+
+const CONTENT_DIR = path.join(process.cwd(), "content");
+
+export function getPostBySlug(slug: string) {
+  const file = path.join(CONTENT_DIR, `${slug}.mdx`);
+  if (!fs.existsSync(file)) return undefined;
+
+  const { data, content } = matter(fs.readFileSync(file, "utf8"));
+  return { meta: frontmatterSchema.parse({ ...data, slug }), content };
+}
+```
+
+用 `zod` 驗證是有原因的。frontmatter 打錯字的時候 —— 少一個 `date`、`category` 寫成不存在的分類 —— 你會希望 build 直接紅字停下來，而不是靜悄悄產出一張日期是 `Invalid Date` 的頁面。
+
+<Callout>
+所有讀檔都發生在 build 時。因為站台是 `output: "export"` 靜態匯出，跑完 `next build` 之後 `content/` 就沒人再碰了，產物是純 HTML。
+</Callout>
+
+## 渲染交給 RSC
+
+`compileMDX` 在 React Server Component 裡直接把字串編成元件，不需要額外的 build 步驟：
+
+```tsx
+const { content } = await compileMDX({
+  source: raw,
+  options: {
+    mdxOptions: {
+      remarkPlugins: [remarkGfm],
+      rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: "github-dark" }]],
+    },
+  },
+});
+```
+
+語法高亮由 `rehype-pretty-code` 背後的 **Shiki** 負責。它用的是 VS Code 的 TextMate 語法定義，所以你在編輯器裡看到的顏色，跟這頁上面那幾塊程式碼是同一套規則算出來的。而且全部在 build 時算完 —— 瀏覽器不會下載任何高亮用的 JS。
+
+雙主題也是在這裡設定的。給 `theme` 傳一組物件而不是字串，Shiki 會把淺色跟深色兩份顏色同時寫進 CSS 變數，切換主題時不用重新算：
+
+```ts
+theme: { light: "github-light", dark: "github-dark" }
+```
+
+| 套件 | 負責 |
+| --- | --- |
+| `gray-matter` | 解 frontmatter |
+| `zod` | 驗證 frontmatter 欄位 |
+| `next-mdx-remote` | 在 RSC 裡編譯 MDX |
+| `remark-gfm` | 表格、刪除線、任務清單 |
+| `rehype-slug` | 標題自動加 `id`，錨點才能跳 |
+| `rehype-pretty-code` | 呼叫 Shiki 做語法高亮 |
+
+## 還沒做完的
+
+- 舊文章搬遷。圖片路徑是個坑：站台在 preview 環境有 `basePath`，但 markdown 裡的 `![](/images/foo.png)` 不會自動補前綴，得寫個 rehype 插件處理。
+- 標籤頁與分類頁。
+- RSS。
+
+不過至少現在，寫文章這件事回到了它該有的樣子 —— 開一個檔案，然後開始打字。

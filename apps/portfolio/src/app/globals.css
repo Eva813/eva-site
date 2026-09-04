@@ -67,13 +67,21 @@
   --color-neutral-700: var(--neutral-700);
   --color-neutral-800: var(--neutral-800);
   --color-neutral-900: var(--neutral-900);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  /* Radius 尺度：品牌語彙是像素格線，圓角只做到「磨掉刀鋒」的程度，不做圓潤。
+   * 原本是 10px 基準的倍數鏈（0.6/0.8/1/1.4…），會長出 14–26px 的大圓角，
+   * 那個量級跟格線、hairline、方正 wordmark 直接打架，所以改成明確值並封頂。
+   *
+   * 只有兩個「有效階」是刻意的：3px 給 ≤24px 的小物件、4px 給其餘容器與控制項。
+   * 3–5px 之間再細分人眼分不出來，多切一階只會讓人每次都要猶豫該用哪個。
+   * xl 以上全部收斂到 --radius：本站沒有任何元素該比 4px 更圓，留著大值只是誤用的入口。 */
+  --radius-xs: 2px; /* 熱力圖方塊、tooltip 箭頭這種 ≤12px 的細節 */
+  --radius-sm: 3px; /* 行內 code、#分類標籤等 ≤24px 的小物件 */
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
   --color-line: color-mix(in oklab, var(--border) 64%, var(--background));
 }
 
@@ -168,7 +176,10 @@
   --sidebar-border: var(--neutral-200);
   --sidebar-ring: var(--primary-600);
 
-  --radius: 0.625rem;
+  /* 基準圓角 4px。shadcn 元件（Button/Tooltip）走的是這個 token，
+   * 先前 0.625rem = 10px 讓 header 的 ThemeToggle 在一片直角裡明顯圓一塊，
+   * 改成 4px 後 shadcn 元件才和手寫元件同一套語彙。 */
+  --radius: 0.25rem;
 }
 
 .dark {
@@ -280,4 +291,118 @@
       opacity: 1;
     }
   }
+}
+
+/* ── Shiki 語法高亮（rehype-pretty-code 雙主題）────────────────────────────
+   build 時把 github-light / github-dark 兩份顏色寫成 --shiki-light /
+   --shiki-dark 變數，這裡只負責挑一份用，切換主題不需要任何 JS。
+
+   注意：以下規則刻意不放進 @layer。@tailwindcss/typography 的 prose 樣式落在
+   utilities layer，layer 順序會蓋過任何 layered 規則（跟 specificity 無關），
+   未分層的樣式才穩定贏過它。 */
+code[data-theme*=" "],
+code[data-theme*=" "] span {
+  color: var(--shiki-light);
+}
+
+.dark code[data-theme*=" "],
+.dark code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+}
+
+/* 沒有指定語言的 fence（``` 後面不接語言）不會被 rehype-pretty-code 包成 figure，
+   會落到 @tailwindcss/typography 的 pre 預設樣式，其中就包含 6px 圓角。
+   不統一的話同一篇文章會同時出現 6px 與 4px 兩種圓角，所以這裡先把圓角收斂到品牌值。
+   （這類區塊的「深色底、無邊框」與本站的「無底色＋1px 邊框」仍不一致，屬既有問題。） */
+.prose pre {
+  border-radius: var(--radius);
+}
+
+/* keepBackground: false → 丟掉 Shiki 自帶的面板底色，改由邊框界定範圍。
+   參考站（miniasp、milo.me）也是同樣的無底色作法，但邊框要夠明顯才撐得住，
+   所以這裡用 --color-border 而不是更淡的 --color-line。
+
+   background 必須顯式寫 transparent：typography 的 pre 預設帶 --tw-prose-pre-bg
+   深色底，只要這裡不寫，淺色模式就會變成「深底 + github-light 深色文字」而讀不了。
+   右側留白是給複製按鈕的位置，長行才不會鑽到按鈕底下。 */
+.prose figure[data-rehype-pretty-code-figure] pre {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  padding: 1rem 0;
+  padding-right: 3rem;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+/* 沒指定語言的 fence（```）不會被 rehype-pretty-code 包成 figure，也就沒有
+   data-language，會落回 typography 的深色底預設 —— 同一篇文章就會同時出現
+   深色底與透明底兩種程式碼區塊。這裡讓它跟上面的區塊長一樣。 */
+.prose pre:not([data-language]) {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  padding: 1rem;
+  padding-right: 3rem;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.prose figure[data-rehype-pretty-code-figure] code {
+  display: grid; /* 讓每個 data-line 各佔一行，行內 padding 才吃得到 */
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  font-weight: 400;
+}
+
+.prose figure[data-rehype-pretty-code-figure] [data-line] {
+  padding: 0 1rem;
+  border-left: 2px solid transparent;
+}
+
+/* 標成 highlighted 的行 */
+.prose figure[data-rehype-pretty-code-figure] [data-highlighted-line] {
+  border-left-color: var(--color-primary);
+  background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+}
+
+/* 檔名標題列：```ts title="posts.ts" */
+.prose [data-rehype-pretty-code-title] {
+  border: 1px solid var(--color-line);
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--color-muted);
+  padding: 0.4rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted-foreground);
+}
+
+/* 有檔名列時，pre 的上緣要轉回直角 —— 兩個圓角疊在同一條接縫上會看到雙弧。 */
+.prose [data-rehype-pretty-code-title] + pre,
+.prose [data-rehype-pretty-code-title] + div > pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  /* typography 會給 pre 一段 margin-top，不收掉的話檔名列會跟程式碼區塊分家，
+     上緣轉直角的處理也就失去意義（CodeBlock 把 pre 包了一層 div，所以要兩個選擇器）。 */
+  margin-top: 0;
+}
+
+/* typography 預設會幫行內 code 補上反引號，這裡不需要 */
+.prose code::before,
+.prose code::after {
+  content: none;
+}
+
+/* 行內 code：用底色框起來取代反引號 */
+.prose :not(pre) > code {
+  border-radius: var(--radius-sm);
+  background: var(--color-muted);
+  padding: 0.1em 0.35em;
+  font-weight: 400;
 }
